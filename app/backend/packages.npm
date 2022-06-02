@@ -1,1 +1,5 @@
 bcryptjs
+joi
+celebrate
+http-status
+http-status-codes
