@@ -1,4 +1,5 @@
 bcryptjs
+@types/bcryptjs
 joi
 celebrate
 http-status

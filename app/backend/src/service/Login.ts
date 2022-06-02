@@ -1,4 +1,4 @@
-import * as Bcrypt from 'bcrypt';
+import * as Bcrypt from 'bcryptjs';
 import Errors from '../error/Errors';
 import User from '../database/models/User';
 import IUser from '../interfaces/User';

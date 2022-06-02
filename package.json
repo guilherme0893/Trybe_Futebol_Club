@@ -20,6 +20,7 @@
     "@testing-library/jest-dom": "5.15.0",
     "@testing-library/react": "11.2.7",
     "@testing-library/user-event": "12.8.3",
+    "@types/bcryptjs": "^2.4.2",
     "axios": "^0.26.0",
     "dotenv": "10.0.0",
     "jest": "26.6.0",
