@@ -1,21 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
-import * as joi from 'joi';
 
 class LoginValidation {
-  public emailValidation = (schema: joi.Schema) => // joi.Schema is the type of schema
-    (req: Request, _res: Response, next: NextFunction) => {
-      // https://jasonwatmore.com/post/2020/07/22/nodejs-express-api-request-schema-validation-with-joi
-      const { error } = schema.validate(req.body.email);
-      if (error) throw error;
-      next();
-    };
+  emailValidation = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'All fields must be filled' });
+    const regexEmail = /\S+@\S+\.\S+/;
+    const testEmail = regexEmail.test(email);
+    if (!testEmail) {
+      return res.status(401).json({ message: 'Incorrect email or password' });
+    }
+    next();
+  };
 
-  public passwordValidation = (schema: joi.Schema) =>
-    (req: Request, _res: Response, next: NextFunction) => {
-      const { error } = schema.validate(req.body.password);
-      if (error) throw error;
-      next();
-    };
+  passwordValidation = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ message: 'All fields must be filled' });
+    next();
+  };
 }
 
 export default LoginValidation;
