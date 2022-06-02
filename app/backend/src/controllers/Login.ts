@@ -1,4 +1,5 @@
 import { Response, Request } from 'express';
+import Errors from '../error/Errors';
 // import Token from '../helpers/Token';
 import LoginService from '../service/Login';
 
@@ -11,7 +12,7 @@ class LoginController {
       const user = await this._loginService.findUser(email, password);
       return res.status(200).json(user);
     } catch (error) {
-      console.log(error);
+      res.status((error as Errors).status).json({ message: (error as Errors).message });
     }
   };
 }

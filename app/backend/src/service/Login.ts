@@ -10,9 +10,9 @@ class LoginService {
 
   async findUser(email: string, password: string) {
     this.user = await User.findOne({ where: { email } }) as IUser;
-    if (!this.user) { throw new Errors(401, 'Incorrect email or password'); }
+    if (!this.user) throw new Errors(401, 'Incorrect email or password');
     const passwordComparison = Bcrypt.compareSync(password, this.user.password as string);
-    if (!passwordComparison) { throw new Errors(401, 'Incorrect email or password'); }
+    if (!passwordComparison) throw new Errors(401, 'Incorrect email or password');
     const { id, username, role } = this.user; // desestruturação do user -->> monitoria
     const token = this._token.create({ username, id, role, email });
     return {
