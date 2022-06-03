@@ -12,4 +12,11 @@ teamRouter.get(
   },
 );
 
+teamRouter.get(
+  '/:id',
+  (req, res) => {
+    teamController.getTeamById(req, res);
+  },
+);
+
 export default teamRouter;

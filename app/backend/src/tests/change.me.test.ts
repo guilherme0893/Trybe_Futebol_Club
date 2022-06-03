@@ -4,6 +4,7 @@ import User from '../database/models/User';
 import Team from '../database/models/Team';
 import userMock from '../tests/mocks/userMock';
 import teamsMock from './mocks/teamsMock';
+import teamMock from './mocks/teamMock';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 import { app } from '../app';
@@ -99,22 +100,35 @@ describe('Test the route get /teams', () => {
     (Team.findAll as sinon.SinonStub).restore();
   })
 
-  it ('if successfull, returns status 200', async () => {
+  it ('if successfull, returns all teams and a status 200', async () => {
     chaiHttpResponse = await chai
       .request(app)
       .get('/teams');
       expect(chaiHttpResponse.status).to.be.equal(200);
       expect(chaiHttpResponse.body).to.be.deep.equal(teamsMock);
-    });
+  });
+});
+
+describe('Test the route get /teams/:id', () => {
+  let chaiHttpResponse: Response;
+
+  before(async () => {
+    sinon
+      .stub(Team, "findOne")
+      .resolves(teamMock as Team);
   });
 
-  // it('if sucessfull, returns all teams', () => {
-  //   chaiHttpResponse = await chai
-  //   .request(app)
-  //   .post('/login')
-  //   .send({
-  //     email: 'admin@admin.com',
-  //     password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW',
-  // });
-  // });
-// })
+  after(()=>{
+    (Team.findOne as sinon.SinonStub).restore();
+  })
+
+  it ('if successfull, returns one team and a status 200', async () => {
+    chaiHttpResponse = await chai
+      .request(app)
+      .get('/teams/1');
+      expect(chaiHttpResponse.status).to.be.equal(200);
+      // retornam no json id e o teamName
+      expect(chaiHttpResponse.body.id).to.be.deep.equal(teamMock.id);
+      expect(chaiHttpResponse.body.teamName).to.be.deep.equal(teamMock.teamName);
+  });
+});
