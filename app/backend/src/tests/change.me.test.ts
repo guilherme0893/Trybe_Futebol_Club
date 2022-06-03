@@ -1,4 +1,3 @@
-import * as mocha from 'mocha';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import User from '../database/models/User'
@@ -39,21 +38,6 @@ describe('Tests the route post/login', () => {
     expect(chaiHttpResponse.body).have.property('user');
     expect(chaiHttpResponse.body).have.property('token');
   });
-});
-
-describe('Tests the route post/login', () => {
-
-  let chaiHttpResponse: Response;
-
-  before(async () => {
-    sinon
-      .stub(User, "findOne")
-      .resolves({...userMock } as User);
-  });
-
-  after(()=>{
-    (User.findOne as sinon.SinonStub).restore();
-  })
 
   it('if the email is incorrect, returns status 401', async () => {
     chaiHttpResponse = await chai
@@ -98,5 +82,25 @@ describe('Tests the route post/login', () => {
     });
     expect(chaiHttpResponse).to.have.status(400);
   });
-
 });
+
+describe('Test the route get /teams', () => {
+  let chaiHttpResponse: Response;
+
+  before(async () => {
+    sinon
+      .stub(Team, "findAll")
+      .resolves(userMock as User);
+  });
+
+  after(()=>{
+    (Team.findAll as sinon.SinonStub).restore();
+  })
+
+  it ('if successfull, returns status 200', async () => {
+
+  });
+  it('if sucessfull, returns all teams', () => {
+
+  });
+})
