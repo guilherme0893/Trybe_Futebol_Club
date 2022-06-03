@@ -1,14 +1,24 @@
 import * as Bcrypt from 'bcryptjs';
+import { JwtPayload } from 'jsonwebtoken';
 import Errors from '../error/Errors';
 import User from '../database/models/User';
 import IUser from '../interfaces/User';
 import Token from '../helpers/Token';
 
 class LoginService {
-  private _token = new Token();
-  private user: IUser;
+  _token = new Token();
+  user: IUser | null;
 
-  async findUser(email: string, password: string) {
+  async validateUserLogin(token: string) {
+    const { email } = this._token.decode(token) as JwtPayload;
+    this.user = await User.findOne({
+      where: { email },
+    });
+    if (!this.user) throw new Errors(404, 'User not found');
+    return this.user.role;
+  }
+
+  async userLogin(email: string, password: string) {
     this.user = await User.findOne({ where: { email } }) as IUser;
     if (!this.user) throw new Errors(401, 'Incorrect email or password');
     const passwordComparison = Bcrypt.compareSync(password, this.user.password as string);
