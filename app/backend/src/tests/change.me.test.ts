@@ -1,7 +1,9 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-import User from '../database/models/User'
+import User from '../database/models/User';
+import Team from '../database/models/Team';
 import userMock from '../tests/mocks/userMock';
+import teamsMock from './mocks/teamsMock';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 import { app } from '../app';
@@ -90,7 +92,7 @@ describe('Test the route get /teams', () => {
   before(async () => {
     sinon
       .stub(Team, "findAll")
-      .resolves(userMock as User);
+      .resolves(teamsMock as Team[]);
   });
 
   after(()=>{
@@ -98,9 +100,21 @@ describe('Test the route get /teams', () => {
   })
 
   it ('if successfull, returns status 200', async () => {
-
+    chaiHttpResponse = await chai
+      .request(app)
+      .get('/teams');
+      expect(chaiHttpResponse.status).to.be.equal(200);
+      expect(chaiHttpResponse.body).to.be.deep.equal(teamsMock);
+    });
   });
-  it('if sucessfull, returns all teams', () => {
 
-  });
-})
+  // it('if sucessfull, returns all teams', () => {
+  //   chaiHttpResponse = await chai
+  //   .request(app)
+  //   .post('/login')
+  //   .send({
+  //     email: 'admin@admin.com',
+  //     password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW',
+  // });
+  // });
+// })
