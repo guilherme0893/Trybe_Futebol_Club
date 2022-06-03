@@ -15,11 +15,11 @@ class Route {
       (req, res, next) => this._loginValidation.passwordValidation(req, res, next),
       (req, res) => this._loginController.userLogin(req, res),
     );
-    app.get(
-      '/login/validate',
-      // (req, res, next) => this._tokenValidation.tokenValidation(req, res, next),
-      (req, res) => this._loginController.validateUserLogin(req, res),
-    );
+    // app.get(
+    //   '/login/validate',
+    //   // (req, res, next) => this._tokenValidation.tokenValidation(req, res, next),
+    //   (req, res) => this._loginController.validateUserLogin(req, res),
+    // );
   }
 }
 
