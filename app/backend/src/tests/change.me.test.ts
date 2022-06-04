@@ -23,7 +23,7 @@ describe('Tests the route post/login', () => {
   before(async () => {
     sinon
       .stub(User, "findOne")
-      .resolves(userMock as User);
+      .resolves(userMock as unknown as User);
   });
 
   after(()=>{

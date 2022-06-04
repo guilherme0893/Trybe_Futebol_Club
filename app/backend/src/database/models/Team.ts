@@ -7,6 +7,10 @@ class Team extends Model {
 }
 
 Team.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+  },
   teamName: DataTypes.STRING,
 }, {
   sequelize: db,

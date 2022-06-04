@@ -23,14 +23,24 @@ module.exports = {
       in_progress: {
         type: Sequelize.BOOLEAN
       },
-      // createdAt: {
+      // home_team: {
+      //   type: Sequelize.INTEGER,
       //   allowNull: false,
-      //   type: Sequelize.DATE
+      //   // field: 'home_team',
+      //   references: {
+      //     model: 'teams',
+      //     key: 'id',
+      //   },
       // },
-      // updatedAt: {
+      // away_team: {
+      //   type: Sequelize.INTEGER,
       //   allowNull: false,
-      //   type: Sequelize.DATE
-      // }
+      //   // field: 'away_team',
+      //   references: {
+      //     model: 'teams',
+      //     key: 'id',
+      //   },
+      // },
     });
   },
   down: async (queryInterface, Sequelize) => {

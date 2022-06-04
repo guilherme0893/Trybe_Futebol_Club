@@ -3,7 +3,7 @@ import db from '.';
 import Team from './Team';
 
 class Match extends Model {
-  // id: number;
+  id: number;
   homeTeam: number;
   homeTeamGoals: number;
   awayTeam: number;
@@ -12,7 +12,10 @@ class Match extends Model {
 }
 
 Match.init({
-  // id: DataTypes.INTEGER,
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+  },
   homeTeam: DataTypes.INTEGER,
   homeTeamGoals: DataTypes.INTEGER,
   awayTeam: DataTypes.INTEGER,
@@ -27,8 +30,10 @@ Match.init({
 });
 
 // team pode ser tanto visitando como mandante
+Team.hasMany(Match, { foreignKey: 'homeTeam', as: 'teamHome' });
+Team.hasMany(Match, { foreignKey: 'awayTeam', as: 'teamAway' });
+
 Match.belongsTo(Team, { foreignKey: 'homeTeam', as: 'teamHome' });
 Match.belongsTo(Team, { foreignKey: 'awayTeam', as: 'teamAway' });
-Team.hasMany(Match, { foreignKey: 'id', as: 'teamId' });
 
 export default Match;
