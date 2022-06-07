@@ -1,11 +1,12 @@
 import * as express from 'express';
 import teamRouter from './routers/Team';
-import matchRouter from './routers/Match';
 import LoginRouter from './routers/Route';
+import MatchRouter from './routers/Match';
 
 class App {
   public app: express.Express;
   public login = new LoginRouter();
+  public match = new MatchRouter();
 
   constructor() {
     this.app = express();
@@ -23,7 +24,7 @@ class App {
     this.app.use(accessControl);
     this.login.login(this.app);
     this.app.use('/teams', teamRouter);
-    this.app.use('/matches', matchRouter);
+    this.match.match(this.app);
   }
 
   public start(PORT: string | number):void {

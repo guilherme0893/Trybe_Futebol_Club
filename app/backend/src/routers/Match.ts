@@ -1,15 +1,22 @@
-import { Router } from 'express';
+import * as express from 'express';
 import MatchController from '../controllers/Match';
+import TokenValidation from '../middlewares/TokenValidation';
 
-const matchController = new MatchController();
+class MatchRouter {
+  private _matchController = new MatchController();
+  private _token = new TokenValidation();
 
-const matchRouter = Router();
+  match(app: express.Application) {
+    app.get(
+      'matches',
+      (req, res) => this._matchController.getAllMatches(req, res),
+    );
+    app.post(
+      '/matches',
+      (req, res, next) => this._token.tokenValidation(req, res, next),
+      (req, res) => this._matchController.createMatch(req, res),
+    );
+  }
+}
 
-matchRouter.get(
-  '/',
-  (req, res) => {
-    matchController.getAllMatches(req, res);
-  },
-);
-
-export default matchRouter;
+export default MatchRouter;
