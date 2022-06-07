@@ -1,35 +1,27 @@
 import { Response, Request } from 'express';
-import Token from '../helpers/Token';
-import Errors from '../error/Errors';
+// import IUserObject from '../interfaces/UserObject';
 import LoginService from '../services/Login';
 
 class LoginController {
   private _loginService = new LoginService();
-  _token = new Token();
-  // private _userRole: object; // it is the req.body obj
 
-  userLogin = async (req: Request, res: Response) => {
+  public userLogin = async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
+      console.log(req.body);
       const user = await this._loginService.userLogin(email, password);
+      console.log(user);
       return res.status(200).json(user);
     } catch (error) {
-      res.status((error as Errors).status).json({ message: (error as Errors).message });
+      const { message } = error as Error;
+      res.status(401).json({ message });
     }
   };
 
-  validateUserLogin = async (req: Request, res: Response) => {
-    const { authorization: token } = req.headers;
+  public validateUserLogin = async (req: Request, res: Response) => {
     try {
-      if (!token || token === '') {
-        return res.status(401);
-      }
-      const decodedToken = this._token.decode(token);
-      if (!decodedToken) {
-        return res.status(404);
-      }
-      const userRole = await this._loginService.validateUserLogin(token as string);
-      return res.status(200).send(userRole);
+      const { role } = req.body.user;
+      return res.status(200).json(role as string);
     } catch (error) {
       console.error(error);
     }

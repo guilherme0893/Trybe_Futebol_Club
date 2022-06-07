@@ -1,9 +1,10 @@
 interface IUserObject {
   user: {
-    id: number,
-    username: string,
-    role: string,
-    email: string,
+    id: number;
+    username: string;
+    role: string;
+    email: string;
+    password: string;
   }
 }
 

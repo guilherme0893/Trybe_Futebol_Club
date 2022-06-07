@@ -1,16 +1,16 @@
 import * as joi from 'joi';
 
-class LoginSchema {
-  login = joi.object().keys({
-    email: joi.string().email().empty().required()
-      .messages({
-        'string.empty': 'All fields must be filled',
-      }),
-    password: joi.string().min(6).empty().required()
-      .messages({
-        'string.empty': 'All fields must be filled',
-      }),
-  });
-}
+const loginSchema = joi.object().keys({
+  email: joi.string().email().required()
+    .messages({
+      'string.empty': 'All fields must be filled',
+      'string.email': 'Incorrect email or password',
+    }),
+  password: joi.string().min(6).required()
+    .messages({
+      'string.empty': 'All fields must be filled',
+      'string.min': 'Incorect email or password',
+    }),
+});
 
-export default LoginSchema;
+export default loginSchema;
