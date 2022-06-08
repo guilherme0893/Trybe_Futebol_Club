@@ -12,30 +12,15 @@ class LoginRouter {
   login(app: express.Application) {
     app.post(
       '/login',
-      (req, res, next) => this.loginValidation.loginDataValidation(req, res, next, loginSchema),
-      (req, res) => this.loginController.userLogin(req, res),
+      (req, res, next) => this.loginValidation.userValidation(req, res, next, loginSchema),
+      (req, res) => this.loginController.login(req, res),
     );
     app.get(
       '/login/validate',
       (req, res, next) => this.tokenValidation.tokenValidation(req, res, next),
-      (req, res) => this.loginController.validateUserLogin(req, res),
+      (req, res) => this.loginController.logintoken(req, res),
     );
   }
 }
 
 export default LoginRouter;
-
-// tentativa com function normal
-// const loginRouter = express.Router();
-// const loginController = new LoginController();
-// const loginValidation = new LoginValidation();
-// loginRouter.post(
-//   '/',
-//   loginValidation.loginDataValidation,
-//   loginController.userLogin,
-// );
-// loginRouter.get(
-//   '/validate',
-//   loginController.validateUserLogin,
-// );
-// export default loginRouter;

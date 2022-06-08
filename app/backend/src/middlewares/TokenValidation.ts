@@ -1,21 +1,29 @@
-import { verify } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import fs = require('fs');
-
-const secret = fs.readFileSync('./jwt.evaluation.key', { encoding: 'utf-8' });
+import { decode } from '../helpers/Token';
+import LoginService from '../services/Login';
+import IUserObject from '../interfaces/UserObject';
 
 class TokenValidation {
+  private loginService = new LoginService();
+
   public tokenValidation = async (req: Request, res: Response, next: NextFunction) => {
-    const { authorization: token } = req.headers;
-    if (!token || token === '') {
-      return res.status(401).json({ message: 'Error' });
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(404);
     }
-    try {
-      verify(token, secret);
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Error' });
+
+    const decodedToken = decode(token);
+
+    if (!decodedToken) {
+      return res.status(404);
     }
+
+    const { id } = (decodedToken as IUserObject).user;
+
+    const loginAuthorization = await this.loginService.findUser(id);
+    req.body.users = loginAuthorization;
+    next();
   };
 }
 

@@ -1,31 +1,28 @@
-import { Response, Request } from 'express';
-// import IUserObject from '../interfaces/UserObject';
-import LoginService from '../services/Login';
+import { Request, Response } from 'express';
+import Login from '../services/Login';
+import { create } from '../helpers/Token';
 
-class LoginController {
-  private _loginService = new LoginService();
+export default class LoginController {
+  private service = new Login();
 
-  public userLogin = async (req: Request, res: Response) => {
+  public login = async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
-      console.log(req.body);
-      const user = await this._loginService.userLogin(email, password);
-      console.log(user);
-      return res.status(200).json(user);
+      const user = await this.service.userLogin(email, password);
+      const token = create(user);
+      return res.status(200).json({ user, token });
     } catch (error) {
-      const { message } = error as Error;
-      res.status(401).json({ message });
+      return res.status(401).json({ message: 'Incorrect email or password' });
     }
   };
 
-  public validateUserLogin = async (req: Request, res: Response) => {
+  public logintoken = async (req: Request, res: Response) => {
     try {
-      const { role } = req.body.user;
-      return res.status(200).json(role as string);
+      const { id } = req.body.users;
+      const user = await this.service.findUser(id);
+      return res.status(200).json(user?.role);
     } catch (error) {
-      console.error(error);
+      return res.status(404).json({ message: 'Incorrect email or password' });
     }
   };
 }
-
-export default LoginController;
