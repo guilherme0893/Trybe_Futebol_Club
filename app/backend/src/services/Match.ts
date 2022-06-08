@@ -3,27 +3,23 @@ import Match from '../database/models/Match';
 import Team from '../database/models/Team';
 
 class MatchService {
+  private _matches: IMatch[];
+  private _newMatch: IMatch;
+
   public getAllMatches = async (): Promise<IMatch[]> => {
-    const matches = await Match.findAll({ // lembrar do eager loading
+    this._matches = await Match.findAll({ // lembrar do eager loading
       include: [
         { model: Team, as: 'teamHome', attributes: { exclude: ['id'] } },
         { model: Team, as: 'teamAway', attributes: { exclude: ['id'] } },
       ],
     });
-    return matches;
+    return this._matches;
   };
 
-  // public getMatchInProgress = async (inProgress: boolean) => {
-  //   const allMatches = await this.getAllMatches();
-  //   const matchesInProgress = allMatches.filter((match) => match.inProgress === inProgress);
-  //   console.log(matchesInProgress);
-  //   return matchesInProgress;
-  // };
-
   public createMatch = async (match: IMatch) => {
-    const newMatch = await Match.create(match);
-    console.log(newMatch);
-    return newMatch;
+    this._newMatch = await Match.create(match);
+    // console.log(newMatch);
+    return this._newMatch;
   };
 }
 

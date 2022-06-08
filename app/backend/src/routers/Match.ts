@@ -8,7 +8,7 @@ class MatchRouter {
 
   match(app: express.Application) {
     app.get(
-      'matches',
+      '/matches',
       (req, res) => this._matchController.getAllMatches(req, res),
     );
     app.post(

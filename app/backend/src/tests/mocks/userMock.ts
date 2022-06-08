@@ -2,10 +2,10 @@ import IUser from '../../interfaces/User';
 
 const userMock: IUser = {
   id: 1,
-  username: 'Admin',
-  email: 'admin@admin.com',
+  username: 'Garrincha',
+  email: 'garrincha@botafogo.com',
   role: 'admin',
-  password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW'
+  password: '$2a$12$hOMKmxbxPPEgKVHOY0Vf.uWjsYig2nbFWHlF1p4XfJDoVbqklZlX2' // botafogo
 }
 
 export default userMock;

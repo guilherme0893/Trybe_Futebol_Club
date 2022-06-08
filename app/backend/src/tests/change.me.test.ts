@@ -23,7 +23,7 @@ describe('Tests the route post/login', () => {
   before(async () => {
     sinon
       .stub(User, "findOne")
-      .resolves(userMock as unknown as User);
+      .resolves({...userMock} as User);
   });
 
   after(()=>{
@@ -35,13 +35,16 @@ describe('Tests the route post/login', () => {
       .request(app)
       .post('/login')
       .send({
-        email: 'admin@admin.com',
-        password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW',
+        email: 'garrincha@botafogo.com',
+        password: 'botafogo',
     });
-    console.log(chaiHttpResponse.body);
     expect(chaiHttpResponse.status).to.be.equal(200);
-    expect(chaiHttpResponse.body).have.property('user');
+    expect(chaiHttpResponse.body.user).have.property('id');
+    expect(chaiHttpResponse.body.user).have.property('username');
+    expect(chaiHttpResponse.body.user).have.property('email');
+    expect(chaiHttpResponse.body.user).have.property('role');
     expect(chaiHttpResponse.body).have.property('token');
+    expect(chaiHttpResponse.body).not.to.have.property('id');
   });
 
   it('if the email is incorrect, returns status 401', async () => {
@@ -86,6 +89,26 @@ describe('Tests the route post/login', () => {
       password: '', 
     });
     expect(chaiHttpResponse).to.have.status(400);
+  });
+
+  it('if the login fails, it returns status 401', async () => {
+    before(async () => {
+      sinon
+        .stub(User, "findOne")
+        .resolves(null);
+    });
+    after(()=>{
+      (User.findOne as sinon.SinonStub).restore();
+    })
+
+    chaiHttpResponse = await chai
+    .request(app)
+    .post('/login')
+    .send({
+      email: 'garrincha@botafogo.com',
+      password: '$2a$12$hOMKmxbxPPEgKVHOY0Vf.uWjsYig2nbFWHlF1p4XfJDoVbqklZlX2', 
+    });
+    expect(chaiHttpResponse).to.have.status(401);
   });
 });
 
@@ -165,17 +188,19 @@ describe('Test the route get /matches', () => {
   it('it is possible to filter matches in progress', async () => {
     chaiHttpResponse = await chai
     .request(app)
-    .get('/matches');
+    .get('/matches?inProgress=true');
+    const inProgressMatch = matchesMock.filter((match) => match.inProgress === true);
     expect(chaiHttpResponse.status).to.be.equal(200);
-    expect(chaiHttpResponse.body).to.have.length(1);
+    expect(chaiHttpResponse.body).to.be.deep.equal(inProgressMatch);
   });
 
   it('it is possible to filter matches NOT in progress', async () => {
     chaiHttpResponse = await chai
     .request(app)
-    .get('/matches');
+    .get('/matches?inProgress=false');
+    const notInProgressMatch = matchesMock.filter((match) => match.inProgress === false);
     expect(chaiHttpResponse.status).to.be.equal(200);
-    expect(chaiHttpResponse.body).to.have.length(2);
+    expect(chaiHttpResponse.body).to.be.deep.equal(notInProgressMatch);
   });
 
 });
