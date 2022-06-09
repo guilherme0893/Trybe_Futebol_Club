@@ -206,7 +206,7 @@ describe('Test the route get /matches', () => {
 
 });
 
-describe('Test the route get /matches', () => {
+describe('Test the route post /matches', () => {
   let chaiHttpResponse: Response;
 
   before(async () => {
@@ -233,3 +233,38 @@ describe('Test the route get /matches', () => {
   });
 
 });
+
+describe('Test the route patch /matches/:id/finish', () => {
+  let chaiHttpResponse: Response;
+
+  before(async () => {
+    sinon
+      .stub(User, "findOne")
+      .resolves({...userMock} as User)
+    sinon
+      .stub(Match, "findOne")
+      .resolves({...matchMock} as Match)
+    sinon
+      .stub(Match, "update")
+      .resolves();
+  });
+
+  after(()=>{
+    (User.findOne as sinon.SinonStub).restore();
+    (Match.findOne as sinon.SinonStub).restore();
+    (Match.update as sinon.SinonStub).restore();
+  });
+
+  it('it is possible to update match status to InProgress to false', async () => {
+    chaiHttpResponse = await chai
+    .request(app)
+    .post('/matches/1/finish')
+    .set(
+      'authorization',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIiwicm9sZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20ifSwiaWF0IjoxNjU0NTM5OTgyfQ.OsrQiFCqxfspIuCmj6hKNYAtK1BnfubkeaEUEzdWKTw'
+    );
+
+    expect(chaiHttpResponse.status).to.be.equal(200);
+    // expect(chaiHttpResponse.body.match.inProgress).to.be('false');
+  });
+})
