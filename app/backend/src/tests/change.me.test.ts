@@ -7,6 +7,7 @@ import userMock from '../tests/mocks/userMock';
 import teamsMock from './mocks/teamsMock';
 import teamMock from './mocks/teamMock';
 import matchesMock from './mocks/matchesMock';
+import matchMock from './mocks/matchMock';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 import { app } from '../app';
@@ -201,6 +202,34 @@ describe('Test the route get /matches', () => {
     const notInProgressMatch = matchesMock.filter((match) => match.inProgress === false);
     expect(chaiHttpResponse.status).to.be.equal(200);
     expect(chaiHttpResponse.body).to.be.deep.equal(notInProgressMatch);
+  });
+
+});
+
+describe('Test the route get /matches', () => {
+  let chaiHttpResponse: Response;
+
+  before(async () => {
+    sinon
+      .stub(Match, "create")
+      .resolves({ ...matchMock } as Match);
+  });
+
+  after(()=>{
+    (Match.create as sinon.SinonStub).restore();
+  });
+
+  it('it is possible to create a match in progress', async () => {
+    chaiHttpResponse = await chai
+    .request(app)
+    .post('/matches')
+    .set(
+      'authorization',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIiwicm9sZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20ifSwiaWF0IjoxNjU0NTM5OTgyfQ.OsrQiFCqxfspIuCmj6hKNYAtK1BnfubkeaEUEzdWKTw'
+    )
+    .send(matchMock);
+    expect(chaiHttpResponse.status).to.be.equal(201);
+    expect(chaiHttpResponse.body).to.be.deep.equal(matchMock)
   });
 
 });
