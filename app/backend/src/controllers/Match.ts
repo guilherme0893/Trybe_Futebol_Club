@@ -27,6 +27,17 @@ class MatchController {
     await this._matchService.updateMatchProgressById(Number(id));
     return res.status(200).json({ message: 'Finished' });
   };
+
+  public updateMatchScore = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
+    await this._matchService.updateMatchScore(
+      id,
+      Number(homeTeamGoals),
+      Number(awayTeamGoals),
+    );
+    return res.status(200).json({ message: 'Score updated' });
+  };
 }
 
 export default MatchController;

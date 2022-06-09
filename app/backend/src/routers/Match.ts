@@ -9,20 +9,22 @@ class MatchRouter {
   private _matchValidation = new MatchValidation();
 
   match(app: express.Application) {
-    app.get(
-      '/matches',
-      (req, res) => this._matchController.getAllMatches(req, res),
+    app.patch(
+      '/matches/:id',
+      (req, res) => this._matchController.updateMatchScore(req, res),
     );
+    app.patch(
+      '/matches/:id/finish',
+      (req, res, next) => this._token.tokenValidation(req, res, next),
+      (req, res) => this._matchController.updateMatchProgressById(req, res),
+    );
+    app.get('/matches', (req, res) => this._matchController.getAllMatches(req, res));
     app.post(
       '/matches',
       (req, res, next) => this._token.tokenValidation(req, res, next),
       (req, res, next) => this._matchValidation.checkIfSameTeams(req, res, next),
       (req, res, next) => this._matchValidation.checkIfTeamExists(req, res, next),
       (req, res) => this._matchController.createMatch(req, res),
-    );
-    app.patch(
-      '/matches/:id/finish',
-      (req, res) => this._matchController.updateMatchProgressById(req, res),
     );
   }
 }

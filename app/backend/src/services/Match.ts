@@ -33,6 +33,21 @@ class MatchService {
       { where: { id } },
     );
   };
+
+  public updateMatchScore = async (id: string, homeTeamGoals: number, awayTeamGoals: number) => {
+    this._matchProgressToBeUpdated = await Match.findAll({
+      where: { id },
+    });
+    await Match.update(
+      {
+        homeTeamGoals,
+        awayTeamGoals,
+      },
+      {
+        where: { id },
+      },
+    );
+  };
 }
 
 export default MatchService;
