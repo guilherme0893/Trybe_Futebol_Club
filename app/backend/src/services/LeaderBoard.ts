@@ -45,7 +45,7 @@ class LeaderBoard {
   public async fillTeamStats() {
     const teams = await this.teamService.getAllTeams(); // array of teams
     const matches = await this.matchService.getAllMatches(); // array of matches
-    const correlateTeamToMatch = teams.map((team) => { // MAPEIA team PARA CADA match ---> createTeamStats(team, match)
+    return teams.map((team) => { // MAPEIA team PARA CADA match ---> createTeamStats(team, match)
       matches.forEach((match) => { this.createTeamStats(team, match); });
       const correlation = { name: team.teamName,
         totalGames: this.totalGames,
@@ -58,9 +58,21 @@ class LeaderBoard {
         goalsBalance: this.goalsBalance,
         efficiency: this.efficiency,
       };
+      this.clearStats();
       return correlation;
     });
-    return correlateTeamToMatch;
+  }
+
+  public clearStats() {
+    this.totalPoints = 0;
+    this.totalGames = 0;
+    this.totalVictories = 0;
+    this.totalDraws = 0;
+    this.totalLosses = 0;
+    this.goalsFavor = 0;
+    this.goalsOwn = 0;
+    this.goalsBalance = 0;
+    this.efficiency = 0;
   }
 
   public async createLeaderBoard() {
