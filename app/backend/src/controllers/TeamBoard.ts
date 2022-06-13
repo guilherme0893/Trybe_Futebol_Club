@@ -5,7 +5,7 @@ class LeaderBoardController {
   private _leaderBoard = new LeaderBoardService();
 
   getLeaderBoard = async (_req: Request, res: Response) => {
-    const learderBoard = await this._leaderBoard.createLeaderBoard();
+    const learderBoard = await this._leaderBoard.createBord();
     return res.status(200).json(learderBoard);
   };
 }

@@ -1,43 +1,15 @@
+import ITeam from '../interfaces/Team';
 import IMatch from '../interfaces/Match';
-// import ITeam from '../interfaces/Team';
-// import Team from './Team';
-// import Match from './Match';
+import TeamObject from '../interfaces/TeamObject';
+import Team from '../database/models/Team';
+import Match from '../database/models/Match';
 
 class LeaderBoard {
-  // private teamService = new Team();
-  // private matchService = new Match();
-  // private totalPoints = 0;
-  // private totalGames = 0;
-  // private totalVictories = 0;
-  // private totalDraws = 0;
-  // private totalLosses = 0;
-  // private goalsFavor = 0;
-  // private goalsOwn = 0;
-  // private goalsBalance = 0;
-  // private efficiency = 0;
-
-  // public createTeamStats(team: ITeam, match: IMatch) {
-  //   // 1 - points must be counted if the match is finished
-  //   if (team.id === match.homeTeam && !match.inProgress) {
-  //     // if wins
-  //     if (match.homeTeamGoals > match.awayTeamGoals) {
-  //       this.totalPoints += 3;
-  //       this.totalVictories += 1;
-  //     }
-  //     // if loses
-  //     if (match.homeTeamGoals < match.awayTeamGoals) this.totalLosses += 1;
-  //     // if draws
-  //     if (match.homeTeamGoals === match.awayTeamGoals) {
-  //       this.totalPoints += 1;
-  //       this.totalDraws += 1;
-  //     }
-  //   }
-  //   this.totalGames += 1;
-  //   this.goalsFavor += match.homeTeamGoals;
-  //   this.goalsOwn += match.awayTeamGoals;
-  //   this.goalsBalance = this.goalsFavor - this.goalsOwn;
-  //   this.efficiency = Number(((this.totalPoints / (this.totalGames * 3)) * 100).toFixed(2));
-  // }
+  private _team: TeamObject;
+  private _teamFinishedMatches: IMatch[];
+  private _sortedTeams: TeamObject[];
+  private _teams: ITeam[];
+  private _teamsBoard: TeamObject[];
 
   public createVictoryStats = (match: IMatch[]): number => match.reduce((accumulator, matches) => {
     if (matches.homeTeamGoals > matches.awayTeamGoals) return accumulator + 1;
@@ -45,58 +17,80 @@ class LeaderBoard {
   }, 0);
 
   public createDrawStas = (match: IMatch[]): number => match.reduce((accumulator, matches) => {
-    if (matches.homeTeam === matches.awayTeamGoals) return accumulator + 1;
+    if (matches.homeTeamGoals === matches.awayTeamGoals) return accumulator + 1;
     return accumulator;
   }, 0);
 
-  public createLosesStats = (match: IMatch[]): number => match.reduce((accumulator, matches) => {
+  public createLossesStats = (match: IMatch[]): number => match.reduce((accumulator, matches) => {
     if (matches.awayTeamGoals > matches.homeTeamGoals) return accumulator + 1;
     return accumulator;
   }, 0);
 
-  // public clearStats() {
-  //   this.totalPoints = 0;
-  //   this.totalGames = 0;
-  //   this.totalVictories = 0;
-  //   this.totalDraws = 0;
-  //   this.totalLosses = 0;
-  //   this.goalsFavor = 0;
-  //   this.goalsOwn = 0;
-  //   this.goalsBalance = 0;
-  //   this.efficiency = 0;
-  // }
+  public createFavorGoals = (match:IMatch[]): number => match.reduce((accumulator, matches) => {
+    const favorGoals = accumulator + matches.homeTeamGoals;
+    return favorGoals;
+  }, 0);
 
-  // public async fillTeamStats() {
-  //   const teams = await this.teamService.getAllTeams(); // array of teams
-  //   const matches: IMatch[] = await this.matchService.getAllMatches(); // array of matches
-  //   return teams.map((team) => { // MAPEIA team PARA CADA match ---> createTeamStats(team, match)
-  //     matches.forEach((match) => { this.createTeamStats(team, match); });
-  //     const correlation = { name: team.teamName,
-  //       totalGames: this.totalGames,
-  //       totalPoints: this.totalPoints,
-  //       totalVictories: this.totalVictories,
-  //       totalDraws: this.totalDraws,
-  //       totalLosses: this.totalLosses,
-  //       goalsFavor: this.goalsFavor,
-  //       goalsOwn: this.goalsOwn,
-  //       goalsBalance: this.goalsBalance,
-  //       efficiency: this.efficiency,
-  //     };
-  //     this.clearStats();
-  //     return correlation;
-  //   });
-  // }
+  public createAgaintsGoals = (match: IMatch[]): number => match.reduce((accumulator, matches) => {
+    const againtGoals = accumulator + matches.awayTeamGoals;
+    return againtGoals;
+  }, 0);
 
-  // public async createLeaderBoard() {
-  //   const teams = await this.fillTeamStats();
-  //   const sortedTeams = teams.sort((teamA, teamB) =>
-  //     teamB.totalPoints - teamA.totalPoints
-  //     || teamB.totalVictories - teamA.totalVictories
-  //     || teamB.goalsBalance - teamA.goalsBalance
-  //     || teamB.goalsFavor - teamA.goalsFavor
-  //     || teamA.goalsOwn - teamB.goalsOwn);
-  //   return sortedTeams;
-  // }
+  // reuses the basic structure of createTeamStats but changing the way of calculating stats;
+  public createTeamStats(team: string, match: IMatch[]) {
+    const teamTotalPoints = (this.createVictoryStats(match) * 3) + this.createDrawStas(match);
+    const teamTotalMatches = match.length;
+    const teamEfficiency = Number(((teamTotalPoints / (teamTotalMatches * 3)) * 100).toFixed(2));
+    const teamGoalsBalance = this.createFavorGoals(match) - this.createAgaintsGoals(match);
+
+    // create object with each team data
+    this._team = {
+      name: team,
+      totalPoints: teamTotalPoints,
+      totalGames: teamTotalMatches,
+      totalVictories: this.createVictoryStats(match),
+      totalLosses: this.createLossesStats(match),
+      totalDraws: this.createDrawStas(match),
+      goalsFavor: this.createFavorGoals(match),
+      goalsOwn: this.createAgaintsGoals(match),
+      goalsBalance: teamGoalsBalance,
+      efficiency: teamEfficiency,
+    };
+    return this._team;
+  }
+
+  // refact to fillTeamStats ---> mapeando os teams e onde eles têm partidas finished, para jogar no createTeamStats;
+  public fillTeamStats(teams: ITeam[], matches: IMatch[]) {
+    return teams.map((team) => {
+      this._teamFinishedMatches = matches.filter((match) => (
+        team.id === match.homeTeam
+      ));
+      return this.createTeamStats(team.teamName, this._teamFinishedMatches);
+    });
+  }
+
+  // refact do createLeaderBoard
+  public sortLeaderBoard(unorderedBoard: TeamObject[]) {
+    this._sortedTeams = unorderedBoard.sort((teamA, teamB) => (
+      teamB.totalPoints - teamA.totalPoints
+        || teamB.totalVictories - teamA.totalVictories
+        || teamB.goalsBalance - teamA.goalsBalance
+        || teamB.goalsFavor - teamA.goalsFavor
+        || teamA.goalsOwn - teamB.goalsOwn
+    ));
+    return this._sortedTeams;
+  }
+
+  public async createBord() {
+    // atenção porque precisa receber partidas finalizadas
+    this._teamFinishedMatches = await Match.findAll({
+      where: { inProgress: false },
+    });
+    // get all teams
+    this._teams = await Team.findAll();
+    this._teamsBoard = this.fillTeamStats(this._teams, this._teamFinishedMatches);
+    return this.sortLeaderBoard(this._teamsBoard);
+  }
 }
 
 export default LeaderBoard;
