@@ -3,12 +3,14 @@ import teamRouter from './routers/Team';
 import LoginRouter from './routers/Route';
 import MatchRouter from './routers/Match';
 import LeaderBoardRouter from './routers/LeaderBoard';
+import AwayLeaderBoardRouter from './routers/AwayLeaderBoard';
 
 class App {
   public app: express.Express;
   public login = new LoginRouter();
   public match = new MatchRouter();
   public leaderBoard = new LeaderBoardRouter();
+  public awayLeaderBoard = new AwayLeaderBoardRouter();
 
   constructor() {
     this.app = express();
@@ -28,6 +30,7 @@ class App {
     this.app.use('/teams', teamRouter);
     this.match.match(this.app);
     this.leaderBoard.leaderBoard(this.app);
+    this.awayLeaderBoard.leaderBoard(this.app);
   }
 
   public start(PORT: string | number):void {
